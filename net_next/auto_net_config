@@ -1,0 +1,27 @@
+#!/usr/bin/expect
+
+# Define the network device details
+set username "admin"
+set password "password"
+set device_ip "192.168.0.1"
+
+# Establish SSH connection to the network device
+spawn ssh $username@$device_ip
+
+# Expect the password prompt and send the password
+expect "password:"
+send "$password\r"
+
+# Execute commands to configure the network device
+send "enable\r"
+expect "Password:"
+send "$password\r"
+send "configure terminal\r"
+send "interface GigabitEthernet0/0\r"
+send "ip address 192.168.1.1 255.255.255.0\r"
+send "exit\r"
+send "exit\r"
+send "write\r"
+expect "confirm"
+send "y\r"
+expect eof
