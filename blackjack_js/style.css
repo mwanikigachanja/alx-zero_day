@@ -1,0 +1,68 @@
+body {
+  background-color: #203647;
+  color: #fff;
+  font-family: Arial, sans-serif;
+  text-align: center;
+  margin: 0;
+  padding: 0;
+}
+
+.container {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  height: 100vh;
+}
+
+h1 {
+  font-size: 40px;
+  margin-bottom: 20px;
+}
+
+.hand {
+  display: flex;
+  flex-wrap: wrap;
+  justify-content: center;
+  margin: 20px 0;
+}
+
+.hand img {
+  width: 80px;
+  margin: 5px;
+  animation: deal-card 0.5s;
+}
+
+@keyframes deal-card {
+  0% { opacity: 0; transform: translateY(-100px) rotate(180deg); }
+  100% { opacity: 1; transform: translateY(0) rotate(0); }
+}
+
+#actions {
+  margin-bottom: 20px;
+}
+
+#message {
+  font-size: 24px;
+  margin-bottom: 20px;
+}
+
+button {
+  padding: 10px 20px;
+  font-size: 18px;
+  background-color: #1f7a8c;
+  color: #fff;
+  border: none;
+  cursor: pointer;
+  transition: background-color 0.3s;
+}
+
+button:hover {
+  background-color: #165c6e;
+}
+
+#result {
+  font-size: 24px;
+  margin-bottom: 20px;
+}
+
