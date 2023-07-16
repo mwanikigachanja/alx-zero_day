@@ -1,0 +1,215 @@
+AWSTemplateFormatVersion: 2010-09-09
+Description: CloudFormation Template for Test & Production Environment
+
+Parameters:
+  DevEnvironmentKeyName:
+    Description: Name of the SSH key pair for developer instances
+    Type: AWS::EC2::KeyPair::KeyName
+    ConstraintDescription: Must be an existing EC2 KeyPair.
+
+Resources:
+  # VPC for Test Environment
+  TestVPC:
+    Type: AWS::EC2::VPC
+    Properties:
+      CidrBlock: "10.0.0.0/16"
+      Tags:
+        - Key: Name
+          Value: TestVPC
+
+  # VPC for Production Environment
+  ProdVPC:
+    Type: AWS::EC2::VPC
+    Properties:
+      CidrBlock: "10.1.0.0/16"
+      Tags:
+        - Key: Name
+          Value: ProdVPC
+
+  # Internet Gateway for Test VPC
+  TestVpcInternetGateway:
+    Type: AWS::EC2::InternetGateway
+
+  # Internet Gateway for Production VPC
+  ProdVpcInternetGateway:
+    Type: AWS::EC2::InternetGateway
+
+  # Attach Internet Gateway to Test VPC
+  AttachTestVpcGateway:
+    Type: AWS::EC2::VPCGatewayAttachment
+    Properties:
+      VpcId: !Ref TestVPC
+      InternetGatewayId: !Ref TestVpcInternetGateway
+
+  # Attach Internet Gateway to Production VPC
+  AttachProdVpcGateway:
+    Type: AWS::EC2::VPCGatewayAttachment
+    Properties:
+      VpcId: !Ref ProdVPC
+      InternetGatewayId: !Ref ProdVpcInternetGateway
+
+  # Public Subnet for Test Environment
+  TestPublicSubnet:
+    Type: AWS::EC2::Subnet
+    Properties:
+      VpcId: !Ref TestVPC
+      CidrBlock: "10.0.0.0/24"
+      AvailabilityZone: "us-east-1a"
+      Tags:
+        - Key: Name
+          Value: TestPublicSubnet
+        - Key: Environment
+          Value: Test
+
+  # Public Subnet for Production Environment
+  ProdPublicSubnet:
+    Type: AWS::EC2::Subnet
+    Properties:
+      VpcId: !Ref ProdVPC
+      CidrBlock: "10.1.0.0/24"
+      AvailabilityZone: "us-east-1b"
+      Tags:
+        - Key: Name
+          Value: ProdPublicSubnet
+        - Key: Environment
+          Value: Production
+
+  # Security Groups for Test and Production Instances
+  TestInstanceSecurityGroup:
+    Type: AWS::EC2::SecurityGroup
+    Properties:
+      GroupDescription: Security group for test instances
+      VpcId: !Ref TestVPC
+
+  ProdInstanceSecurityGroup:
+    Type: AWS::EC2::SecurityGroup
+    Properties:
+      GroupDescription: Security group for production instances
+      VpcId: !Ref ProdVPC
+
+  # IAM Role for Instance Automation
+  InstanceAutomationRole:
+    Type: AWS::IAM::Role
+    Properties:
+      AssumeRolePolicyDocument:
+        Version: "2012-10-17"
+        Statement:
+          - Effect: Allow
+            Principal:
+              Service: ec2.amazonaws.com
+            Action: "sts:AssumeRole"
+      ManagedPolicyArns:
+        - "arn:aws:iam::aws:policy/AmazonEC2FullAccess" # Adjust based on specific needs
+
+  # IAM Roles for User Roles Setup
+  MasterAdminRole:
+    Type: AWS::IAM::Role
+    Properties:
+      AssumeRolePolicyDocument:
+        Version: "2012-10-17"
+        Statement:
+          - Effect: Allow
+            Principal:
+              Service: ec2.amazonaws.com
+            Action: "sts:AssumeRole"
+      ManagedPolicyArns:
+        - "arn:aws:iam::aws:policy/AdministratorAccess" # Full access to AWS services
+
+  SeniorDeveloperRole:
+    Type: AWS::IAM::Role
+    Properties:
+      AssumeRolePolicyDocument:
+        Version: "2012-10-17"
+        Statement:
+          - Effect: Allow
+            Principal:
+              Service: ec2.amazonaws.com
+            Action: "sts:AssumeRole"
+      ManagedPolicyArns:
+        - "arn:aws:iam::aws:policy/AmazonS3FullAccess" # Full access to S3
+        - "arn:aws:iam::aws:policy/AmazonEC2FullAccess" # Full access to EC2
+
+  JuniorDeveloperRole:
+    Type: AWS::IAM::Role
+    Properties:
+      AssumeRolePolicyDocument:
+        Version: "2012-10-17"
+        Statement:
+          - Effect: Allow
+            Principal:
+              Service: ec2.amazonaws.com
+            Action: "sts:AssumeRole"
+      ManagedPolicyArns:
+        - "arn:aws:iam::aws:policy/AmazonS3PutObject" # Access to put objects in S3 bucket
+
+  MainServerAdminRole:
+    Type: AWS::IAM::Role
+    Properties:
+      AssumeRolePolicyDocument:
+        Version: "2012-10-17"
+        Statement:
+          - Effect: Allow
+            Principal:
+              Service: ec2.amazonaws.com
+            Action: "sts:AssumeRole"
+      ManagedPolicyArns:
+        - "arn:aws:iam::aws:policy/AmazonEC2FullAccess" # Full access to EC2
+
+  JuniorServerAdminRole:
+    Type: AWS::IAM::Role
+    Properties:
+      AssumeRolePolicyDocument:
+        Version: "2012-10-17"
+        Statement:
+          - Effect: Allow
+            Principal:
+              Service: ec2.amazonaws.com
+            Action: "sts:AssumeRole"
+      ManagedPolicyArns:
+        - "arn:aws:iam::aws:policy/AmazonEC2LimitedAccess" # Limited access to EC2
+
+  # Instance Profile for Instance Automation
+  InstanceAutomationProfile:
+    Type: AWS::IAM::InstanceProfile
+    Properties:
+      Roles:
+        - !Ref InstanceAutomationRole
+
+  # EC2 Instance for Development
+  DevelopmentInstance:
+    Type: AWS::EC2::Instance
+    Properties:
+      InstanceType: t2.micro # Change to desired instance type
+      KeyName: !Ref DevEnvironmentKeyName
+      SecurityGroups:
+        - !Ref TestInstanceSecurityGroup
+      UserData:
+        Fn::Base64: !Sub |
+          #!/bin/bash -xe
+          # Your user data script here (e.g., install required software)
+      Tags:
+        - Key: Name
+          Value: DevelopmentInstance
+
+  # S3 Bucket for Large File Storage
+  LargeFilesBucket:
+    Type: AWS::S3::Bucket
+    Properties:
+      BucketName: !Sub "large-files-bucket-${AWS::AccountId}-${AWS::Region}"
+      AccessControl: Private # Adjust the access control based on requirements
+
+  # Add more resources based on your specific requirements (e.g., load balancers, etc.)
+
+Outputs:
+  TestVPCId:
+    Description: VPC ID of the Test VPC
+    Value: !Ref TestVPC
+
+  ProdVPCId:
+    Description: VPC ID of the Production VPC
+    Value: !Ref ProdVPC
+
+  LargeFilesBucketName:
+    Description: Name of the S3 bucket for large file storage
+    Value: !Ref LargeFilesBucket
+
