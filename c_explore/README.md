@@ -8,26 +8,23 @@ Welcome to the C_Explore folder! This folder contains simple text-based games im
 
 2. **Rock-Paper-Scissors Game:** A simple text-based version of the classic Rock-Paper-Scissors game. Play against the computer and see if you can outsmart it!
 
+3. **Word Scramble Game:** Unscramble the letters to reveal the correct word. The computer will choose a random word, scramble the letters, and you have to guess it!
+
+4. **Number Guessing Game (Reverse Guessing):** In this game, the computer will try to guess a number you have in mind. Provide hints (higher or lower), and see if the computer can guess the correct number!
+
+5. **Text Adventure Game:** Embark on a small text-based adventure where you explore a mysterious cave. Make choices that affect the outcome of your journey!
+
 ## How to Play
 
-1. **Blackjack Game:**
+To play any of the games in this folder:
 
-   - Run the `blackjack.c` file using a C compiler.
-   - The game will prompt you with your initial two cards and the dealer's face-up card.
-   - You can choose to "hit" to get another card or "stand" to keep your current hand.
-   - The dealer will then play its turn according to the fixed rules.
-   - The winner will be determined based on the total value of the hands without exceeding 21.
-
-2. **Rock-Paper-Scissors Game:**
-
-   - Run the `rock_paper_scissors.c` file using a C compiler.
-   - Enter your choice by typing "rock," "paper," or "scissors" when prompted.
-   - The computer will randomly generate its choice.
-   - The winner will be determined based on the game's rules: rock beats scissors, scissors beats paper, and paper beats rock.
+1. Open the respective `.c` file using a C compiler.
+2. Compile and run the code to start the game.
+3. Follow the on-screen instructions and input your choices to play the game.
 
 ## Dependencies
 
-The games in this folder are written in C and should run on any system with a C compiler installed.
+These games are written in C and should run on any system with a C compiler installed.
 
 ## License
 
@@ -37,4 +34,5 @@ These games are provided under the MIT License. Feel free to use, modify, and di
 
 If you find any issues with the games or want to improve them, feel free to contribute! You can submit bug reports, suggest enhancements, or send pull requests. Your contributions are highly appreciated.
 
-Happy gaming and exploring the C programming language! If you have any questions or need further assistance, please don't hesitate to reach out. Enjoy!
+Happy gaming and exploring the C programming language! If you have any questions or need further assistance, please don't hesitate to reach out. 
+Enjoy!
