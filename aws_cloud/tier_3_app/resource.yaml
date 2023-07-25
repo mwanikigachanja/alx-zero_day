@@ -1,0 +1,316 @@
+AWSTemplateFormatVersion: "2010-09-09"
+Description: "CloudFormation Template for Creating a VPC with EC2 Instances and RDS Instance"
+
+Parameters:
+  VpcCIDR:
+    Description: "CIDR block for the VPC"
+    Type: String
+    Default: "10.0.0.0/16"
+
+  PublicSubnetCIDR:
+    Description: "CIDR block for the public subnet"
+    Type: String
+    Default: "10.0.0.0/24"
+
+  PrivateSubnet1CIDR:
+    Description: "CIDR block for the first private subnet"
+    Type: String
+    Default: "10.0.1.0/24"
+
+  PrivateSubnet2CIDR:
+    Description: "CIDR block for the second private subnet"
+    Type: String
+    Default: "10.0.2.0/24"
+
+  PrivateSubnet3CIDR:
+    Description: "CIDR block for the third private subnet"
+    Type: String
+    Default: "10.0.3.0/24"
+
+Resources:
+  # VPC and Subnets
+  MyVPC:
+    Type: AWS::EC2::VPC
+    Properties:
+      CidrBlock: !Ref VpcCIDR
+      EnableDnsSupport: true
+      EnableDnsHostnames: true
+
+  PublicSubnet:
+    Type: AWS::EC2::Subnet
+    Properties:
+      VpcId: !Ref MyVPC
+      CidrBlock: !Ref PublicSubnetCIDR
+      AvailabilityZone: !Select [0, !GetAZs ""]
+
+  PrivateSubnet1:
+    Type: AWS::EC2::Subnet
+    Properties:
+      VpcId: !Ref MyVPC
+      CidrBlock: !Ref PrivateSubnet1CIDR
+      AvailabilityZone: !Select [0, !GetAZs ""]
+
+  PrivateSubnet2:
+    Type: AWS::EC2::Subnet
+    Properties:
+      VpcId: !Ref MyVPC
+      CidrBlock: !Ref PrivateSubnet2CIDR
+      AvailabilityZone: !Select [1, !GetAZs ""]
+
+  PrivateSubnet3:
+    Type: AWS::EC2::Subnet
+    Properties:
+      VpcId: !Ref MyVPC
+      CidrBlock: !Ref PrivateSubnet3CIDR
+      AvailabilityZone: !Select [1, !GetAZs ""]
+
+  # Internet Gateway
+  InternetGateway:
+    Type: AWS::EC2::InternetGateway
+
+  AttachGateway:
+    Type: AWS::EC2::VPCGatewayAttachment
+    Properties:
+      VpcId: !Ref MyVPC
+      InternetGatewayId: !Ref InternetGateway
+
+  # NAT Gateway
+  MyNatGatewayEIP:
+    Type: AWS::EC2::EIP
+    DependsOn: AttachGateway
+
+  MyNatGateway:
+    Type: AWS::EC2::NatGateway
+    Properties:
+      AllocationId: !GetAtt MyNatGatewayEIP.AllocationId
+      SubnetId: !Ref PublicSubnet
+
+  # Route Tables
+  PublicRouteTable:
+    Type: AWS::EC2::RouteTable
+    Properties:
+      VpcId: !Ref MyVPC
+
+  PrivateRouteTable1:
+    Type: AWS::EC2::RouteTable
+    Properties:
+      VpcId: !Ref MyVPC
+
+  PrivateRouteTable2:
+    Type: AWS::EC2::RouteTable
+    Properties:
+      VpcId: !Ref MyVPC
+
+  PrivateRouteTable3:
+    Type: AWS::EC2::RouteTable
+    Properties:
+      VpcId: !Ref MyVPC
+
+  PublicRoute:
+    Type: AWS::EC2::Route
+    DependsOn: AttachGateway
+    Properties:
+      RouteTableId: !Ref PublicRouteTable
+      DestinationCidrBlock: "0.0.0.0/0"
+      GatewayId: !Ref InternetGateway
+
+  PrivateRoute1:
+    Type: AWS::EC2::Route
+    Properties:
+      RouteTableId: !Ref PrivateRouteTable1
+      DestinationCidrBlock: "0.0.0.0/0"
+      NatGatewayId: !Ref MyNatGateway
+
+  PrivateRoute2:
+    Type: AWS::EC2::Route
+    Properties:
+      RouteTableId: !Ref PrivateRouteTable2
+      DestinationCidrBlock: "0.0.0.0/0"
+      NatGatewayId: !Ref MyNatGateway
+
+  PrivateRoute3:
+    Type: AWS::EC2::Route
+    Properties:
+      RouteTableId: !Ref PrivateRouteTable3
+      DestinationCidrBlock: "0.0.0.0/0"
+      NatGatewayId: !Ref MyNatGateway
+
+  PublicSubnetRouteTableAssociation:
+    Type: AWS::EC2::SubnetRouteTableAssociation
+    Properties:
+      SubnetId: !Ref PublicSubnet
+      RouteTableId: !Ref PublicRouteTable
+
+  PrivateSubnet1RouteTableAssociation:
+    Type: AWS::EC2::SubnetRouteTableAssociation
+    Properties:
+      SubnetId: !Ref PrivateSubnet1
+      RouteTableId: !Ref PrivateRouteTable1
+
+  PrivateSubnet2RouteTableAssociation:
+    Type: AWS::EC2::SubnetRouteTableAssociation
+    Properties:
+      SubnetId: !Ref PrivateSubnet2
+      RouteTableId: !Ref PrivateRouteTable2
+
+  PrivateSubnet3RouteTableAssociation:
+    Type: AWS::EC2::SubnetRouteTableAssociation
+    Properties:
+      SubnetId: !Ref PrivateSubnet3
+      RouteTableId: !Ref PrivateRouteTable3
+
+  # Security Groups
+  BastionSecurityGroup:
+    Type: AWS::EC2::SecurityGroup
+    Properties:
+      GroupDescription: "Security Group for Bastion Host"
+      VpcId: !Ref MyVPC
+
+  WebServerSecurityGroup:
+    Type: AWS::EC2::SecurityGroup
+    Properties:
+      GroupDescription: "Security Group for Web Server"
+      VpcId: !Ref MyVPC
+
+  AppServerSecurityGroup:
+    Type: AWS::EC2::SecurityGroup
+    Properties:
+      GroupDescription: "Security Group for App Server"
+      VpcId: !Ref MyVPC
+
+  DatabaseSecurityGroup:
+    Type: AWS::EC2::SecurityGroup
+    Properties:
+      GroupDescription: "Security Group for Database"
+      VpcId: !Ref MyVPC
+
+  # Security Group Ingress Rules
+  BastionToAppServer:
+    Type: AWS::EC2::SecurityGroupIngress
+    Properties:
+      GroupId: !Ref AppServerSecurityGroup
+      SourceSecurityGroupId: !Ref BastionSecurityGroup
+      IpProtocol: "-1"
+
+  WebServerToAppServer:
+    Type: AWS::EC2::SecurityGroupIngress
+    Properties:
+      GroupId: !Ref AppServerSecurityGroup
+      SourceSecurityGroupId: !Ref WebServerSecurityGroup
+      IpProtocol: "tcp"
+      FromPort: 80
+      ToPort: 80
+
+  AppServerToDatabase:
+    Type: AWS::EC2::SecurityGroupIngress
+    Properties:
+      GroupId: !Ref DatabaseSecurityGroup
+      SourceSecurityGroupId: !Ref AppServerSecurityGroup
+      IpProtocol: "tcp"
+      FromPort: 3306
+      ToPort: 3306
+
+  # Bastion Host
+  BastionHost:
+    Type: AWS::EC2::Instance
+    Properties:
+      InstanceType: "t2.micro"
+      ImageId: "ami-xxxxxxxxxxxxxxxxx"  # Replace with Amazon Linux 2 AMI ID
+      KeyName: "YourKeyPairName"
+      SubnetId: !Ref PublicSubnet
+      SecurityGroupIds: [!Ref BastionSecurityGroup]
+
+  # Web Server
+  WebServer:
+    Type: AWS::EC2::Instance
+    Properties:
+      InstanceType: "t2.micro"
+      ImageId: "ami-xxxxxxxxxxxxxxxxx"  # Replace with Amazon Linux 2 AMI ID
+      KeyName: "YourKeyPairName"
+      SubnetId: !Ref PublicSubnet
+      UserData:
+        Fn::Base64: !Sub |
+          #!/bin/bash
+          sudo yum update -y
+          sudo amazon-linux-extras install -y lamp-mariadb10.2-php7.2 php7.2
+          sudo yum install -y httpd
+          sudo systemctl start httpd
+          sudo systemctl enable httpd
+      SecurityGroupIds: [!Ref WebServerSecurityGroup]
+
+  # App Server
+  AppServer:
+    Type: AWS::EC2::Instance
+    Properties:
+      InstanceType: "t2.micro"
+      ImageId: "ami-xxxxxxxxxxxxxxxxx"  # Replace with Amazon Linux 2 AMI ID
+      KeyName: "YourKeyPairName"
+      SubnetId: !Ref PublicSubnet
+      UserData:
+        Fn::Base64: !Sub |
+          #!/bin/bash
+          sudo yum install -y mariadb-server
+          sudo service mariadb start
+      SecurityGroupIds: [!Ref AppServerSecurityGroup]
+
+  # RDS Database
+  MyDBSubnetGroup:
+    Type: AWS::RDS::DBSubnetGroup
+    Properties:
+      DBSubnetGroupName: "MyDBSubnetGroup"
+      SubnetIds:
+        - !Ref PrivateSubnet1
+        - !Ref PrivateSubnet2
+        - !Ref PrivateSubnet3
+
+  MyDBInstance:
+    Type: AWS::RDS::DBInstance
+    Properties:
+      Engine: "mariadb"
+      DBInstanceClass: "db.t2.micro"
+      EngineVersion: "10.2.0"
+      DBName: "mydb"
+      MasterUsername: "root"
+      MasterUserPassword: "Re:Start!9"
+      AllocatedStorage: 20
+      MultiAZ: true
+      PubliclyAccessible: false
+      DBSubnetGroupName: !Ref MyDBSubnetGroup
+
+Outputs:
+  VPCID:
+    Description: "VPC ID"
+    Value: !Ref MyVPC
+
+  PublicSubnetID:
+    Description: "Public Subnet ID"
+    Value: !Ref PublicSubnet
+
+  PrivateSubnet1ID:
+    Description: "Private Subnet 1 ID"
+    Value: !Ref PrivateSubnet1
+
+  PrivateSubnet2ID:
+    Description: "Private Subnet 2 ID"
+    Value: !Ref PrivateSubnet2
+
+  PrivateSubnet3ID:
+    Description: "Private Subnet 3 ID"
+    Value: !Ref PrivateSubnet3
+
+  BastionHostIP:
+    Description: "Public IP address of the Bastion Host"
+    Value: !GetAtt BastionHost.PublicIp
+
+  WebServerIP:
+    Description: "Public IP address of the Web Server"
+    Value: !GetAtt WebServer.PublicIp
+
+  AppServerIP:
+    Description: "Public IP address of the App Server"
+    Value: !GetAtt AppServer.PublicIp
+
+  DBEndpoint:
+    Description: "Endpoint of the RDS Database"
+    Value: !GetAtt MyDBInstance.Endpoint.Address
+
