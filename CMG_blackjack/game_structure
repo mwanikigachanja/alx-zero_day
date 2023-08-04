@@ -1,0 +1,23 @@
+blackjack_game/
+│
+├── backend/
+│   ├── database.py
+│   └── score.py
+│
+├── frontend/
+│   ├── assets/
+│   │   ├── card_images/
+│   │   ├── ...
+│   │
+│   ├── ui.py
+│   └── installer_scripts/
+│       ├── windows_installer_script.exe
+│       ├── linux_installer_script.sh
+│
+├── logic/
+│   ├── blackjack_logic.py
+│   └── error_handling.py
+│
+├── main.py
+└── README.md
+
