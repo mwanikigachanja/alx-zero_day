@@ -1,8 +1,17 @@
-const API_BASE_URL = "https://your-api-url.com"; // Replace with the actual API base URL
+const url = 'https://football-prediction-api.p.rapidapi.com/api/v2/predictions/99999';
+const options = {
+	method: 'GET',
+	headers: {
+		'X-RapidAPI-Key': '430bbd5628msh423c03d2058743cp1374d0jsn87393bc52466',
+		'X-RapidAPI-Host': 'football-prediction-api.p.rapidapi.com'
+	}
+};
 
-async function fetchData(url) {
+
+
+async function fetchData(url, options) {
     try {
-        const response = await fetch(url);
+        const response = await fetch(url, options);
         if (!response.ok) {
             throw new Error("Network response was not ok");
         }
@@ -15,7 +24,7 @@ async function fetchData(url) {
 
 async function displayMatchList() {
     const matchListContainer = document.getElementById("matchList");
-    const matches = await fetchData(`${API_BASE_URL}/matches`);
+    const matches = await fetchData(`${url}/matches`, options);
     
     if (!matches) {
         matchListContainer.innerHTML = "<p>Error fetching match data.</p>";
