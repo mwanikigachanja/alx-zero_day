@@ -1,12 +1,19 @@
+import random
 class BlackjackGame:
     def __init__(self):
-        self.deck = []  # Create and shuffle deck
+        self.deck = self.generate_deck() # Create and shuffle deck
         self.player_hand = []
         self.dealer_hand = []
         self.player_hands = [self.player_hand]  # To support splitting
         self.active_hand_index = 0
         self.insurance_taken = False
+        self.player_bust = False
+        self.dealer_bust = False
 
+    def generate_deck(self):
+        suits = ['Hearts', 'Diamonds', 'Clubs', 'Spades']
+        ranks = ['2', '3', '4', '5', '6', '7', '8', '9', '10', 'J', 'Q', 'K', 'A']
+        return [{'rank': rank, 'suit': suit} for suit in suits for rank in ranks]
 
     def double_down(self):
         if len(self.player_hands[self.active_hand_index]) == 2 and self.player_chips >= self.bet_amount:
@@ -32,9 +39,32 @@ class BlackjackGame:
 
     def deal_initial_cards(self):
         # Logic to deal initial cards to players
+        self.player_hand = [self.draw_card(), self.draw_card()]
+        self.dealer_hand = [self.draw_card(), self.draw_card()]
 
+    def draw_card(self):
+        card = random.choice(self.deck)
+        self.deck.remove(card)
+        return card
     def player_hit(self):
         # Logic for player hitting
+        if sum(self.get_hand_values(self.player_hand)) < 21:
+            self.player_hand.append(self.draw_card())
+        else:
+            self.player_bust = True
+
+    def get_hand_values(self, hand):
+        values = [self.card_value(card) for card in hand]
+        return values
+
+    def card_value(self, card):
+        rank = card['rank']
+        if rank in ['J', 'Q', 'K']:
+            return 10
+        elif rank == 'A':
+            return 11 if sum(self.get_hand_values([card])) + 11 <= 21 else 1
+        else:
+            return int(rank)
 
     def player_stand(self):
         # Logic for player standing

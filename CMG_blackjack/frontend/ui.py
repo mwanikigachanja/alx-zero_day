@@ -70,17 +70,28 @@ class BlackjackUI:
         self.play_button.config(state=tk.DISABLED)
         self.hit_button.config(state=tk.NORMAL)
         self.stand_button.config(state=tk.NORMAL)
+        self.double_button.config(state=tk.NORMAL)
+        self.split_button.config(state=tk.NORMAL)
+        self.insurance_button.config(state=tk.NORMAL)
 
         self.game.deal_initial_cards()
         self.label.config(text="Your Hand: " + ", ".join(self.game.player_hand))
-        
+
+        # Update UI with player's initial hand
+        self.update_ui()
+
     def player_hit(self):
         self.game.player_hit()
         self.label.config(text="Your Hand: " + ", ".join(self.game.player_hand))
 
         if self.game.player_bust:
             self.end_game()
-        
+
+    def update_ui(self):
+        # Update UI components with current game state
+        player_hand_text = "Your Hand: " + ", ".join(self.game.player_hand)
+        self.label.config(text=player_hand_text)
+
     def player_stand(self):
         self.hit_button.config(state=tk.DISABLED)
         self.stand_button.config(state=tk.DISABLED)
@@ -99,6 +110,8 @@ class BlackjackUI:
         elif result.startswith("Dealer"):
             self.score_manager.add_score("Dealer", 1)
 
+        self.update_ui()
+        
     def show_scores(self):
         scores = self.score_manager.get_scores()
         score_text = "\n".join(f"{name}: {score}" for name, score in scores)
