@@ -1,11 +1,15 @@
 import tkinter as tk
-from logic.blackjack_logic import BlackjackGame
+from tkinter import messagebox
+import pygame
+from PIL import Image, ImageTk
+# Import the PIL library for image handling
+from logic.game_logic import BlackjackGame
 from backend.score import ScoreManager
 
 class BlackjackUI:
     def __init__(self, root):
         self.root = root
-        self.root.title("Blackjack Game")
+        self.root.title("CMG MASTER BLACKJACK")
         self.player_chips = 100
         self.bet_amount = 0
         # Add UI components and logic here
@@ -13,6 +17,10 @@ class BlackjackUI:
         # Initialize game logic and score manager
         self.game = BlackjackGame()
         self.score_manager = ScoreManager()
+        self.animation_frames = []  # List to store animation frames
+        self.current_frame = 0
+        # Initialize pygame mixer for sound effects
+        pygame.mixer.init()
 
         # UI components
         self.label = tk.Label(root, text="Welcome to Blackjack!")
@@ -43,10 +51,21 @@ class BlackjackUI:
         self.quit_button = tk.Button(root, text="Quit", command=root.quit)
         self.quit_button.pack()
 
-    def start_game(self):
-        self.play_button.config(state=tk.DISABLED)
-        self.hit_button.config(state=tk.NORMAL)
-        self.stand_button.config(state=tk.NORMAL)
+    def animate_dealing(self):
+        self.animate_button.config(state=tk.DISABLED)
+        self.current_frame = 0
+        self.animate_frame()
+
+    def animate_frame(self):
+        if self.current_frame < len(self.animation_frames):
+            self.label.config(text=self.animation_frames[self.current_frame])
+            self.current_frame += 1
+            self.root.after(500, self.animate_frame)  # Delay between frames
+        else:
+            self.animate_button.config(state=tk.NORMAL)
+            self.label.config(text="Your Hand: " + ", ".join(self.game.player_hand))
+            self.root.update()
+
     def start_game(self):
         self.play_button.config(state=tk.DISABLED)
         self.hit_button.config(state=tk.NORMAL)
@@ -105,12 +124,41 @@ class BlackjackUI:
     def update_chips_label(self):
         self.chips_label.config(text="Chips: " + str(self.player_chips))
         self.bet_label.config(text="Bet: " + str(self.bet_amount))
-    
-    def animate_dealing(self):
-        # Implement card dealing animation using animation frames
 
     def play_sound(self, sound_file):
         # Implement sound playing logic
+        sound = pygame.mixer.Sound(sound_file)
+        sound.play()
+
+    def animate_dealing(self):
+        self.play_sound("deal_sound.wav")  # Play deal sound effect
+        self.play_sound("deal_sound.wav")  # Play deal sound effect
+        # Implement card dealing animation using animation frames
+        self.animate_button.config(state=tk.DISABLED)
+        self.current_frame = 0
+        self.animate_frame()
+
+    def animate_frame(self):
+        if self.current_frame < len(self.animation_frames):
+            frame = self.animation_frames[self.current_frame]
+
+            # Display image if the frame is an image path
+            if isinstance(frame, str):
+                image = Image.open(frame)
+                image = image.resize((200, 300))  # Resize the image to fit the UI
+                photo = ImageTk.PhotoImage(image=image)
+                self.label.config(image=photo)
+                self.label.image = photo
+            else:
+                self.label.config(text=frame)
+
+            self.current_frame += 1
+            self.root.after(500, self.animate_frame)  # Delay between frames
+        else:
+            self.animate_button.config(state=tk.NORMAL)
+            self.label.config(text="Your Hand: " + ", ".join(self.game.player_hand))
+            self.root.update()
+
 
 def main():
     root = tk.Tk()
@@ -119,4 +167,3 @@ def main():
 
 if __name__ == "__main__":
     main()
-

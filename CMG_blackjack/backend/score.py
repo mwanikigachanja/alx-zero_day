@@ -1,4 +1,4 @@
-from backend.database import Database
+from backend.db import Database
 
 class ScoreManager:
     def __init__(self):
