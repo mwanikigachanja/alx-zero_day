@@ -1,7 +1,9 @@
 import random
+
+
 class BlackjackGame:
     def __init__(self):
-        self.deck = self.generate_deck() # Create and shuffle deck
+        self.deck = self.generate_deck()  # Create and shuffle deck
         self.player_hand = []
         self.dealer_hand = []
         self.player_hands = [self.player_hand]  # To support splitting
@@ -11,6 +13,7 @@ class BlackjackGame:
         self.dealer_bust = False
         self.player_chips = 100  # Initial chip count
         self.bet_amount = 0
+        self.payout = 0
 
     @staticmethod
     def generate_deck():
@@ -39,7 +42,6 @@ class BlackjackGame:
             self.insurance_taken = True
             self.player_chips -= self.bet_amount / 2
 
-
     def deal_initial_cards(self):
         # Logic to deal initial cards to players
         self.player_hand = [self.draw_card(), self.draw_card()]
@@ -49,6 +51,7 @@ class BlackjackGame:
         card = random.choice(self.deck)
         self.deck.remove(card)
         return card
+
     def player_hit(self):
         # Logic for player hitting
         if sum(self.get_hand_values(self.player_hand)) < 21:
@@ -77,14 +80,42 @@ class BlackjackGame:
 
     def dealer_turn(self):
         # Logic for dealer's turn
+        while sum(self.get_hand_values(self.dealer_hand)) < 17:
+            self.dealer_hand.append(self.draw_card())
+
+        if sum(self.get_hand_values(self.dealer_hand)) > 21:
+            self.dealer_bust = True
 
     def determine_winner(self):
         # Logic to determine the winner
+        player_score = sum(self.get_hand_values(self.player_hand))
+        dealer_score = sum(self.get_hand_values(self.dealer_hand))
 
-        def update_player_chips(self, amount):
-            self.player_chips += amount
+        if player_score > 21:
+            self.dealer_bust = False
+            return "Dealer"
+        elif dealer_score > 21 or player_score > dealer_score:
+            self.dealer_bust = False
+            return "Player"
+        elif player_score == dealer_score:
+            self.dealer_bust = False
+            return "Push"  # Tie
+        else:
+            return "Dealer"
+
+    def update_player_chips(self, amount):
+        self.player_chips += amount
 
     def place_bet(self, amount):
         if amount <= self.player_chips:
             self.bet_amount = amount
             self.player_chips -= amount
+
+    def calculate_payout(self):
+        winner = self.determine_winner()
+        if winner == "Player":
+            self.payout = self.bet_amount * 2  # Player wins, gets back double the bet
+        elif winner == "Push":
+            self.payout = self.bet_amount  # Tie, player gets back their bet
+        else:
+            self.payout = 0  # Player loses, no payout

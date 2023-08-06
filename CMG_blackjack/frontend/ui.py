@@ -106,7 +106,7 @@ class BlackjackUI:
         self.stand_button.config(state=tk.DISABLED)
         self.game.calculate_payout()
         self.update_player_chips(self.game.payout)
-        self.game.reset_game_state()
+        self.game.dealer_turn()
 
         result = self.game.determine_winner()
         self.label.config(text=result)
@@ -117,6 +117,7 @@ class BlackjackUI:
             self.score_manager.add_score("Dealer", 1)
 
         self.update_ui()
+        self.game.reset_game_state()
 
     def show_scores(self):
         scores = self.score_manager.get_scores()
