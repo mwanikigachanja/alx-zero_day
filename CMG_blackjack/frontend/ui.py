@@ -11,7 +11,8 @@ class BlackjackUI:
         self.root = root
         self.root.title("CMG MASTER BLACKJACK")
         self.player_chips = 100
-        self.bet_amount = 0
+        bet_amount = int(self.bet_entry.get())
+        self.game.place_bet(bet_amount)
         # Add UI components and logic here
         
         # Initialize game logic and score manager
@@ -25,6 +26,9 @@ class BlackjackUI:
         # UI components
         self.label = tk.Label(root, text="Welcome to Blackjack!")
         self.label.pack()
+
+        self.chips_label = tk.Label(root, text="Chips: 100")
+        self.chips_label.pack()
 
         self.play_button = tk.Button(root, text="Play", command=self.start_game)
         self.play_button.pack()
@@ -46,7 +50,6 @@ class BlackjackUI:
 
         self.animate_button = tk.Button(root, text="Animate", command=self.animate_dealing)
         self.animate_button.pack()
-
 
         self.quit_button = tk.Button(root, text="Quit", command=root.quit)
         self.quit_button.pack()
@@ -101,7 +104,10 @@ class BlackjackUI:
     def end_game(self):
         self.hit_button.config(state=tk.DISABLED)
         self.stand_button.config(state=tk.DISABLED)
-        
+        self.game.calculate_payout()
+        self.update_player_chips(self.game.payout)
+        self.game.reset_game_state()
+
         result = self.game.determine_winner()
         self.label.config(text=result)
         
@@ -111,7 +117,7 @@ class BlackjackUI:
             self.score_manager.add_score("Dealer", 1)
 
         self.update_ui()
-        
+
     def show_scores(self):
         scores = self.score_manager.get_scores()
         score_text = "\n".join(f"{name}: {score}" for name, score in scores)
@@ -180,3 +186,4 @@ def main():
 
 if __name__ == "__main__":
     main()
+

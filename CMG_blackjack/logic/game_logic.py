@@ -9,8 +9,11 @@ class BlackjackGame:
         self.insurance_taken = False
         self.player_bust = False
         self.dealer_bust = False
+        self.player_chips = 100  # Initial chip count
+        self.bet_amount = 0
 
-    def generate_deck(self):
+    @staticmethod
+    def generate_deck():
         suits = ['Hearts', 'Diamonds', 'Clubs', 'Spades']
         ranks = ['2', '3', '4', '5', '6', '7', '8', '9', '10', 'J', 'Q', 'K', 'A']
         return [{'rank': rank, 'suit': suit} for suit in suits for rank in ranks]
@@ -78,3 +81,10 @@ class BlackjackGame:
     def determine_winner(self):
         # Logic to determine the winner
 
+        def update_player_chips(self, amount):
+            self.player_chips += amount
+
+    def place_bet(self, amount):
+        if amount <= self.player_chips:
+            self.bet_amount = amount
+            self.player_chips -= amount
