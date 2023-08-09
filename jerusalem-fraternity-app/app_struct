@@ -1,0 +1,32 @@
+├── public/
+│   ├── index.html
+│   └── ...
+├── src/
+│   ├── assets/
+│   │   └── ...
+│   ├── components/
+│   │   ├── AccountManagement.vue
+│   │   ├── LoanStatus.vue
+│   │   ├── Payments.vue
+│   │   └── ...
+│   ├── views/
+│   │   ├── Home.vue
+│   │   ├── Login.vue
+│   │   ├── Dashboard.vue
+│   │   └── ...
+│   ├── store/
+│   │   ├── index.js
+│   │   └── ...
+│   ├── router/
+│   │   ├── index.js
+│   │   └── ...
+│   ├── services/
+│   │   ├── api.js
+│   │   └── ...
+│   ├── App.vue
+│   └── main.js
+├── .gitignore
+├── babel.config.js
+├── package.json
+└── README.md
+
