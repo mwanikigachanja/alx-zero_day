@@ -1,0 +1,70 @@
+# AWS News Scraper
+
+The AWS News Scraper is a Python bot designed to scrape news and updates related to AWS Cloud Computing from the AWS website. It utilizes web scraping techniques to extract news article information, and it provides functionality to store this information in a PostgreSQL database.
+
+## Features
+
+- Scrapes AWS news articles including title, source, and link.
+- Utilizes BeautifulSoup for parsing HTML content.
+- Stores news data in a PostgreSQL database.
+- Implements error handling and logging.
+- Periodically updates the news using a scheduling library.
+
+## Functionality
+
+1. Fetches AWS news articles from the official AWS website.
+2. Extracts title, source, and link information from each article.
+3. Stores the extracted information in a PostgreSQL database.
+4. Provides error handling and logging for improved reliability.
+5. Schedules periodic updates to keep the news data up-to-date.
+
+## Dependencies
+
+- Python 3.x
+- BeautifulSoup
+- psycopg2 (PostgreSQL database driver)
+- schedule
+
+## Usage
+
+1. Replace the PostgreSQL database connection details in the script.
+2. Run the script to start scraping and storing AWS news articles.
+
+---
+
+# Live Score Scraper
+
+The Live Score Scraper is a Python bot designed to scrape live score information for major sports leagues from a hypothetical website. It fetches live scores, extracts relevant details, and provides both console output and database storage for further analysis.
+
+## Features
+
+- Scrapes live score data from a hypothetical sports website.
+- Extracts league, team names, and scores.
+- Utilizes BeautifulSoup for parsing HTML content.
+- Stores live score data in a PostgreSQL database.
+- Implements error handling and logging.
+- Periodically updates the live scores using a scheduling library.
+
+## Functionality
+
+1. Makes HTTP requests to a hypothetical live score website.
+2. Parses HTML content to extract league, team names, and scores.
+3. Prints live score information to the console.
+4. Stores the extracted data in a PostgreSQL database.
+5. Provides error handling and logging for improved reliability.
+6. Schedules periodic updates to keep the live scores up-to-date.
+
+## Dependencies
+
+- Python 3.x
+- BeautifulSoup
+- psycopg2 (PostgreSQL database driver)
+- schedule
+
+## Usage
+
+1. Replace the PostgreSQL database connection details in the script.
+2. Replace the URL with the actual live score website's URL.
+3. Run the script to start scraping and storing live score information.
+
+
