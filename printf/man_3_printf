@@ -1,68 +1,87 @@
-.Dd 17/03/20               \" DATE
-.Dt Untitled 1      \" Program name and manual section number
-.Sh NAME                 \" Section Header - required - don't modify
-.Nm Untitled,
-
-
-.TH _PRINTF
-
-.Sh NAME
-_Printf \ - print formated output
-
-.Sh SYNOPSIS
-
+./" This is _printf manpage
+.TH man 3 "17 May 2020" "1.0" "_printf man page"
+.SH NAME
 .B _printf
+- format and data.
+.SH SYNOPSIS
+_printf FORMAT [ARGUMENT]...
+.SH DESCRIPTION
+Print ARGUMENT(s) according to FORMAT:
 
-#include "holberton.h"
-#include <stdarg.h>
+\\"     double quote.
 
-int _printf(const char *format, ...);
+\\\\     backslash.
 
-.Sh Description
+\\n     new line.
 
-this function produces an output having in acount a some formats indicated
-by some characters.
+\\r     carriage return.
 
-.SH Return value
+\\t     horizontal tab.
 
-After gettin  succes in execution this functions return the number of character
-printed.
+%%     a single %.
 
-.Sh Format
+.SH CONVERSION CHARACTERS
+.B The conversion specifiers and their meanings are:
+.IP -b 
+The unsigned int argument is converted to binary.
 
-It is used a character or idetifier to give acces to a specific type of format
-wich  are the way users are going to see their outputs
+.IP -d,i
+The int argument is converted to signed decimal notation.
 
-example:
+.IP -c
+The int argument is converted to an unsigned char, and the resulting character is written.
 
-_printf("%C",character);
 
-_printf("%d", decimal number);
+.IP -o,u,x,X
+The unsigned int argument is converted to ( ) notation:
 
-when a character is specified by putting a previous percent symbol it says the
-function to look for a subfunction to execute the conversion to that format
+unsigned octal: (o).
 
-.Sh The flag characters
+unsigned decimal: (u).
 
-these are the main flags this function uses to print formated output:
+unsigned hexadecimal: (x and X).
 
-.It Fl c
+.IP -s
+Characters from the array are written up to (but not including) a terminating null byte ('\0').
+	
+.IP -S 
+Characters from the array are written up to (but not including) a terminating null byte ('\0').
 
-gives a character formated to the standard out.
+Not include characters (0 < ASCII value < 32 or >= 127), are printed \x, , followed by the ASCII code value in hexadecimal (upper case - always 2 characters).
 
-.It Fl s
+.IP -p
+The void * pointer argument is printed in hexadecimal (as if by %#x or %#lx).
 
-show a string of characters wichc are pointed by *s.
+.SH EXAMPLES
 
-.It Fl %
+.IP -print a string.
+_printf("This is a string");
+_printf("%s\n", "I am a string too!");
 
-if a percent symbol is placed next to the format especifier wich is
-an other percent symbol the out put will be the percent character.
+.IP print char.
+_printf("Character:[%c]\n", 'H');
 
-.It Fl d
+.IP -print integuer.
+_printf("%d, %i\n", 2, 5);
 
-this flag provides the output of integer  decimal base 10
+.SH SEE ALSO
 
-.It Fl i
+.I printf(1), printf(3).
 
-as was said below this flag shows integer values also in base 10
+.SH BUGS
+
+No known bugs.
+
+.SH AUTHOR
+
+David Orozco & Jose Parrales.
+
+.SH COPYRIGHT
+
+Copyright © 2020 Holberton School B.
+
+
+Copyright © SS64.com 1999-2020.
+
+
+Copyright Â© 2010 Free Software Foundation, Inc. License GPLv3+: GNU GPL version 3 or later <http://gnu.org/licenses/gpl.html>.
