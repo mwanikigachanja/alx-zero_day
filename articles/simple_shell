@@ -1,0 +1,96 @@
+Hello! I'd be happy to help you create a simple guide for the 0x16 C - Simple Shell project, tailored to ALX SE students. This project typically involves creating a basic shell that can execute simple shell commands. Here's a step-by-step guide to get you started:
+
+### Step 1: Understand the Project Requirements
+
+Before diving into the code, it's essential to understand what you need to accomplish in this project. Read the project requirements provided by your ALX SE instructors carefully. Typically, you'll need to create a simple shell that can:
+
+1. Display a prompt and read commands from the user.
+2. Execute simple commands (e.g., ls, cd, echo) by forking a child process.
+3. Handle built-in commands (e.g., exit, env).
+4. Handle PATH resolution for executing commands.
+5. Implement error handling.
+
+### Step 2: Setting Up Your Development Environment
+
+Make sure you have a C development environment set up on your computer. You can use a text editor (like VSCode or Sublime Text) and a C compiler (such as GCC).
+
+### Step 3: Create a Skeleton for Your Shell
+
+Start by creating a basic structure for your shell program. Here's a simplified example:
+
+```c
+#include <stdio.h>
+#include <stdlib.h>
+#include <unistd.h>
+
+int main(void) {
+    char *input;
+    size_t bufsize = 64;
+
+    input = (char *)malloc(bufsize * sizeof(char));
+    if (input == NULL) {
+        perror("malloc");
+        exit(EXIT_FAILURE);
+    }
+
+    while (1) {
+        printf("$ ");
+        getline(&input, &bufsize, stdin);
+        // Parse and execute commands here
+    }
+
+    free(input);
+    return EXIT_SUCCESS;
+}
+```
+
+### Step 4: Parsing User Input
+
+Inside the `while` loop, you need to parse user input and execute the corresponding commands. You can use functions like `strtok` or custom parsing logic to break the input into separate tokens.
+
+### Step 5: Implementing Command Execution
+
+For executing commands, you'll use the `fork()` and `exec()` system calls. Here's a basic example:
+
+```c
+pid_t child_pid;
+int status;
+
+child_pid = fork();
+if (child_pid == -1) {
+    perror("fork");
+    exit(EXIT_FAILURE);
+}
+
+if (child_pid == 0) {  // This code runs in the child process
+    // Execute the command using exec()
+    execvp(args[0], args);
+    perror("execvp");
+    exit(EXIT_FAILURE);
+} else {  // This code runs in the parent process
+    // Wait for the child to complete (or handle background processes)
+    waitpid(child_pid, &status, 0);
+}
+```
+
+### Step 6: Implement Built-in Commands
+
+Handle built-in commands like "exit" and "env" separately within your shell program.
+
+### Step 7: Handle PATH Resolution
+
+To execute commands like "ls" or "echo," you'll need to implement PATH resolution. You can use the `getenv()` function to retrieve the PATH environment variable and then search for the executable in the directories listed in PATH.
+
+### Step 8: Implement Error Handling
+
+Make sure to handle errors gracefully throughout your code. Use the `perror()` function to print informative error messages.
+
+### Step 9: Testing Your Shell
+
+Test your shell by running various commands and checking if it behaves as expected. Make sure to consider edge cases and handle them appropriately.
+
+### Step 10: Refine and Document
+
+Refine your code, improve user experience, and add comments and documentation to make your code easy to understand and maintain.
+
+Remember that this is a simplified guide to get you started. Developing a full-featured shell can be a complex task, so don't hesitate to consult reference materials and ask your ALX SE instructors for guidance as needed. Good luck with your Simple Shell project!
