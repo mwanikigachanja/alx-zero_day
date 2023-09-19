@@ -1,5 +1,5 @@
 
-.TH SHELL 1 "NOVEMBER 4, 2021"  "alx-Hoberton-School" "0x16"
+.TH SHELL 1 "SEPTEMBER 16, 2023"  "alx-Hoberton-School" "0x16"
  "1.01" "C - simple_shell - man page"
 
 .SH NAME
@@ -45,5 +45,5 @@ $ ls -l
 not many found.
 
 .SH AUTHOR
-Emma Udeji, Pericles Adjovi.
+CHARLES MWANIKI, NIFEMI OLUWALADE.
 
